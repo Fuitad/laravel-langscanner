@@ -42,11 +42,17 @@ class FileTranslations implements Contracts\FileTranslations
 
     public function all(): array
     {
+        $translations = [];
+
         if (file_exists($this->path())) {
-            return json_decode($this->disk->get($this->path()), true);
+            $translations = json_decode($this->disk->get($this->path()), true);
+
+            if ($this->saveDottedItemsAsArray) {
+                $translations = collect($translations)->dot()->toArray();
+            }
         }
 
-        return [];
+        return $translations;
     }
 
     public function contains(string $key): bool
